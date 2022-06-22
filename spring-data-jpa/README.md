@@ -1,6 +1,6 @@
 # Spring Data JPA
 
-![jpa](jpa.png)
+![jpa](https://github.com/swimming-lab/spring-study/blob/master/spring-data-jpa/jpa.PNG)
 
 **ORM**
 
@@ -17,7 +17,7 @@
 
 **JDBC**
 
-![jdbc](jdbc.png)
+![jdbc](https://github.com/swimming-lab/spring-study/blob/master/spring-data-jpa/jdbc.PNG)
 
 JDBC는 DB에 접근할 수 있도록 자바에서 제공하는 API이다.
 
@@ -25,7 +25,7 @@ JDBC는 DB에 접근할 수 있도록 자바에서 제공하는 API이다.
 
 **Spring Data JPA**
 
-![spring-data-jpa](spring-data-jpa.png)
+![spring-data-jpa](https://github.com/swimming-lab/spring-study/blob/master/spring-data-jpa/spring-data-jpa.PNG)
 
 JPA는 ORM을 위한 자바 EE표준이며 Spring Data JPA는 JPA를 쉽게 사용하기 위해 스프링에서 제공하고 있는 프레임워크이다.
 
@@ -37,7 +37,7 @@ Spring Data JPA, Spring Data MongoDB, Spring Data Redis 등 Spring Data 하위 �
 
 **INSERT**
 
-![jpa_insert](jpa_insert.png)
+![jpa_insert](https://github.com/swimming-lab/spring-study/blob/master/spring-data-jpa/jpa_insert.PNG)
 
 - Member 객체를 분석
 - INSTERT SQL 생성
@@ -45,7 +45,7 @@ Spring Data JPA, Spring Data MongoDB, Spring Data Redis 등 Spring Data 하위 �
 
 **FIND**
 
-![jpa_find](jpa_find.png)
+![jpa_find](https://github.com/swimming-lab/spring-study/blob/master/spring-data-jpa/jpa_find.PNG)
 
 - Entity 객체의 정보로 SELECT SQL 생성
 - JDBC API를 사용하여 SQL을 실행
