@@ -1,25 +1,26 @@
 package swm.spring.jpa.entity;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Collections;
+import java.util.Set;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class Member {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Team team;
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private Set<Article> articles = Collections.emptySet();
 
     public Member(String name) {
         this.name = name;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
     }
 }

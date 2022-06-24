@@ -2,7 +2,7 @@
 
 ![jpa](https://github.com/swimming-lab/spring-study/blob/master/spring-data-jpa/jpa.PNG)
 
-**ORM**
+**ORM(Object Relational Mapping)**
 
 - JAVA에서 제공하는 ORM기술에 대한 표준 명세 API
 - ORM은 DB테이블을 자바 객체로 매핑함으로써 객체간의 관계를 바탕으로 SQL을 자동으로 생성한다.
@@ -87,3 +87,62 @@ String teamName = team.getName();
 **N+1**
 
 쿼리를 1개만 날렸는데, 연관관계 때문에 추가 쿼리가 N개 나가는 것을 의미한다.
+findById와 같은 entityManager.find() 요청은 jpa가 내부적으로 join문에 대한 쿼리를 만들어서 반환하기 때문에 문제가 없다.
+
+단, 실무에서는 jpql문을 짜기도 하고,
+findBy~ 의 쿼리 메소드도 사용하기 때문에 jpql이 만들어져 N+1이 발생하게 된다.
+
+**해결 방법**
+
+- 지연 로딩
+  - 지연 로딩하면 연관 관계의 객체를 프록시 객체로 생성하여 실제 사용 시점에 쿼리를 날린다.
+  - 그러나 사용하는 순간에 N+1 문제를 피할 수 없다.(반복문으로 모든 연관 객체의 데이터를 읽을 경우)
+  - 지연 로딩, 즉시 로딩은 쿼리를 실행시키는 시점에 차이만 있을 뿐 해결책이 아니다.
+- Fetch join
+  - 일반적은 조인문
+    - @Query("select m from Member m left join m.teams")
+      - 조인된 쿼리가 발생하지만 연관관계 객체들은 여전히 지연 로딩이어서 프록시 객체로 조회되어 사용될 때 N+1 문제가 유지 된다.
+  - fetch join
+    - @Query("select m from Member m left join fetch m.teams")
+    - join문에 fetch를 걸어 지연 로딩이 걸려 있는 연관 관계에 대해 한번에 같이 즉시 로딩해주는 구문이다.
+  - EntityGraph 방법
+    - @EntityGraph(attributePaths = {"team"}, type = EntityGraphType.FETCH) @Query(일반쿼리...)
+    - fetch join을 jpql문에 하드코딩을 하지 않고도 fetch join 할 수 있다.
+  - 그러나 이 방법에도 문제가 있다.
+    - Pagination 처리를 할 수 없다.
+      - Pageable 객체를 파라미터에 추가한다고 해도 쿼리에 limit, offset 이 추가되지 않는다.
+      - 모든 데이터를 조회하고 거기서 페이징처리를 한다.(appliying in memory)
+      - 데이터양이 많아질 경우 Out Of Memory가 발생할 수 있다.
+      - 이유는 distinct 때문에 jpa는 limit, offset을 걸지 않고 메모리로 가져온 뒤 페이징하기 때문이다.
+    - Pagination 해결 방법?
+      - ManyToOne 관계로 페이징 처리를 요청하면 된다.
+
+**distinc를 사용하는 이유**
+
+하나의 연관관계에 대해서 fetch join으로 가져온다고 했을 때 중복된 데이터가 많기 때문에 실제로 원하는 데이터 양보다 중복되어 많이 들어오게 된다.
+
+연관관계에서 article이 list형태로 들어가기 때문에 Member가 여러개로 분리되어 생성되는 것을 막아준다.(중복 제거)
+
+**mapperd by**
+
+mapperd by 옵션은 객체간 양방향 연관관계일 때 사용한다.
+
+연관관계의 주인은 해당 옵션을 사용하지 않고 반대쪽 객체에서 사용한다.(외래키를 가지고 있는 @ManyToOne이 주인이다.)
+
+즉, 양방향 관계일 때 반대쪽에 매핑되는 엔티티의 필드값을 넣는다.
+
+```java
+public class Article {
+	...
+	@ManyToOne
+	private Member member
+	...
+}
+
+public class  Member {
+	...
+	@OneToMany(mappedBy = "member")
+	private Set<Article> articles;
+	...
+}
+```
