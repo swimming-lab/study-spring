@@ -2,6 +2,7 @@ package swm.spring.jpa.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -17,6 +18,7 @@ public class Member {
 
     private String name;
 
+    @BatchSize(size = 10)
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private Set<Article> articles = Collections.emptySet();
 

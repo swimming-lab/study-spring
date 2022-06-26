@@ -74,11 +74,11 @@ JPA의 Entity Manager가 활성화된 상태로 @Transactional 안에서 DB 데�
 Member member = memberRepository.findById(memberId);
 // select * from member 테이블에 대한 쿼리만 실행
 
-Team team = member.getTeam();
-// Team 객체는 프록시 객체로 가져온다.
+Set<Articles> articles = member.getArticles();
+// Articles 객체는 프록시 객체로 가져온다.
 
-String teamName = team.getName();
-// 사용될 때 select * from group 쿼리가 실행
+String title = articles.get(article_id).getTitle();
+// 사용될 때 article에 대한 쿼리를 실행
 </pre>
 **즉시 로딩(EAGER)**
 - 연결된 Entity들을 조인으로 한번에 쿼리를 실행시킨다.
@@ -100,13 +100,13 @@ findBy~ 의 쿼리 메소드도 사용하기 때문에 jpql이 만들어져 N+1�
   - 지연 로딩, 즉시 로딩은 쿼리를 실행시키는 시점에 차이만 있을 뿐 해결책이 아니다.
 - Fetch join
   - 일반적은 조인문
-    - @Query("select m from Member m left join m.teams")
+    - @Query("select m from Member m left join m.articles")
       - 조인된 쿼리가 발생하지만 연관관계 객체들은 여전히 지연 로딩이어서 프록시 객체로 조회되어 사용될 때 N+1 문제가 유지 된다.
   - fetch join
-    - @Query("select m from Member m left join fetch m.teams")
+    - @Query("select m from Member m left join fetch m.articles")
     - join문에 fetch를 걸어 지연 로딩이 걸려 있는 연관 관계에 대해 한번에 같이 즉시 로딩해주는 구문이다.
   - EntityGraph 방법
-    - @EntityGraph(attributePaths = {"team"}, type = EntityGraphType.FETCH) @Query(일반쿼리...)
+    - @EntityGraph(attributePaths = {"article"}, type = EntityGraphType.FETCH) @Query(일반쿼리...)
     - fetch join을 jpql문에 하드코딩을 하지 않고도 fetch join 할 수 있다.
   - 그러나 이 방법에도 문제가 있다.
     - Pagination 처리를 할 수 없다.
@@ -116,19 +116,20 @@ findBy~ 의 쿼리 메소드도 사용하기 때문에 jpql이 만들어져 N+1�
       - 이유는 distinct 때문에 jpa는 limit, offset을 걸지 않고 메모리로 가져온 뒤 페이징하기 때문이다.
     - Pagination 해결 방법?
       - ManyToOne 관계로 페이징 처리를 요청하면 된다.
+      - Batch Size로 해결 방법
+        - 이건 페이징이라기 보단 크기를 알 수 있는 데이터에 갯수를 지정한 만큼만 가져오는 방법이다.
+        - Member 를 Batch Size만큼 조회하고 연관관계인 Articles을 조회할 때 `in` 절로 member_id를 넣는 방법이다.
+        - @BatchSize의 기준은 Article이 아닌 Member이다.
 
 **distinc를 사용하는 이유**
 
-하나의 연관관계에 대해서 fetch join으로 가져온다고 했을 때 중복된 데이터가 많기 때문에 실제로 원하는 데이터 양보다 중복되어 많이 들어오게 된다.
-
+하나의 연관관계에 대해서 fetch join으로 가져온다고 했을 때 중복된 데이터가 많기 때문에 실제로 원하는 데이터 양보다 중복되어 많이 들어오게 된다.  
 연관관계에서 article이 list형태로 들어가기 때문에 Member가 여러개로 분리되어 생성되는 것을 막아준다.(중복 제거)
 
 **mapperd by**
 
-mapperd by 옵션은 객체간 양방향 연관관계일 때 사용한다.
-
-연관관계의 주인은 해당 옵션을 사용하지 않고 반대쪽 객체에서 사용한다.(외래키를 가지고 있는 @ManyToOne이 주인이다.)
-
+mapperd by 옵션은 객체간 양방향 연관관계일 때 사용한다.  
+연관관계의 주인은 해당 옵션을 사용하지 않고 반대쪽 객체에서 사용한다.(외래키를 가지고 있는 @ManyToOne이 주인이다.)  
 즉, 양방향 관계일 때 반대쪽에 매핑되는 엔티티의 필드값을 넣는다.
 
 ```java

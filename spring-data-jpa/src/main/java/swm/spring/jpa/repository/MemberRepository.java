@@ -1,5 +1,6 @@
 package swm.spring.jpa.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @EntityGraph(attributePaths = {"articles"}, type = EntityGraph.EntityGraphType.FETCH)
     @Query("select distinct m from Member m left join m.articles")
     List<Member> findAllEntityGraph();
+
+//    Page<Member> findAll(Pageable pageable);
 }

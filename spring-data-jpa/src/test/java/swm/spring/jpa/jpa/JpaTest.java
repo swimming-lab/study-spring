@@ -175,4 +175,39 @@ public class JpaTest {
          *             on article0_.member_id=member1_.id limit ?
          */
     }
+
+    @Test
+    @DisplayName("Fetch join Paging 해결: ManyToOne 관계에서는 페이징처리가 됨")
+    void batchSizePagingSolutionTest() {
+        System.out.println("---------------------------------------------------");
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        Page<Member> memberList = memberRepository.findAll(pageRequest);
+        System.out.println(memberList.getSize());
+        for (Member member : memberList) {
+            member.getArticles().size();
+        }
+        System.out.println("---------------------------------------------------");
+        /**
+         * Hibernate:
+         *     select
+         *         member0_.id as id1_1_,
+         *         member0_.name as name2_1_
+         *     from
+         *         member member0_ limit ?
+         * 5
+         * Hibernate:
+         *     select
+         *         articles0_.member_id as member_i3_0_1_,
+         *         articles0_.id as id1_0_1_,
+         *         articles0_.id as id1_0_0_,
+         *         articles0_.member_id as member_i3_0_0_,
+         *         articles0_.title as title2_0_0_
+         *     from
+         *         article articles0_
+         *     where
+         *         articles0_.member_id in (
+         *             ?, ?
+         *         )
+         */
+    }
 }
