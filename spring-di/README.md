@@ -92,7 +92,8 @@ IoC를 구현하기 위해 스프링에서는 DI를 지원한다.
 의존성 주입이란?  
 의존성을 외부에서 주입해 주는 것을 말한다.
 
-IoC는 원칙중 하나고 IoC를 달성하는 디자인패턴 중 하나이다.
+IoC는 원칙중 하나고 IoC를 달성하는 디자인패턴 중 하나이다.  
+
 
 ### Spring에서 의존성 주입 방법(@Autowired)
 
@@ -146,12 +147,11 @@ public class AClass {
 }
 ```
 
-스프링에서 공식적으로 추천하는 방법이다.
+스프링에서 공식적으로 추천하는 방법이다.  
+생성자 기반 및 세터 기반 DI를 혼합할 수 있고,  
+생성자 주입된 컴포넌트들이 완전히 초기화된 상태로 반환되기 때문이다.  
 
-생성자 기반 및 세터 기반 DI를 혼합할 수 있고, 생성자 주입된 컴포넌트들이 완전히 초기화된 상태로 반환되기 때문이다.
-
-필드를 final로 만들 수 있어 불변을 보장하여 의존이 변하지 않는다.
-
+필드를 final로 만들 수 있어 불변을 보장하여 의존이 변하지 않는다.  
 그러므로 NullPointerException이 발생하지 않고 순환 참조를 방지할 수 있다.
 
 의존성 방법 우선순위
@@ -214,8 +214,28 @@ public PayController(PayService naverPayService) {
 }
 ```
 
+### Configuration에서 직접 Bean 등록하여 의존성 주입 방법
+@Configuration 어노테이션을 추가한 설정파일 클래스를 만들고서  
+@Bean 메소드를 만들어서 원하는 클래스를 생성해준다.
+```java
+@Configuration
+public class SpringConfig {    
+    @Bean
+    public MemberService() {
+        return new MemberService(memberRepository());
+    }
+    
+    @Bean
+    public MemberRepository memberRepository() {
+        return new MemoryMemberRepository();
+        // return new JpaMemberRepository();    // 원하느 구현체를 지정하여 Service로 넘겨줄 수 있음
+        // return new RedisMemberRepository();
+    }
+}
+```
 
-### 정리
+
+## 정리
 - IoC, DIP 는 원칙(Principle)
 - DI는 이 것을 구현하는 디자인 패턴
 - 객체지향 원칙을 지키기 위함
