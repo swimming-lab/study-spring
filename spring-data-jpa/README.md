@@ -193,3 +193,41 @@ EntityManager를 통해 데이터를 조회할 때 우선 2차 cache에서 찾�
 - 어플리케이션에서 공유하므로 모든 트랜잭션에서 공유가 가능하다.
 - 객체를 그대로 반환하는 것이 아니라 복사본을 만들어서 반환한다.
 - 데이터베이스 기본 키를 기준으로 캐시하지만 영속성 컨텍스트가 다르면 객체 동일성을 보장하지 않는다.(A ≠ B)
+
+**테스트**
+```java
+@Test
+void persistentContextCachedTest() {
+System.out.println("영속성 컨텍스트 : 쿼리 실행");
+Optional<CachedMember> cachedMember1 = cachedMemberRepository.findById(1L);
+
+    System.out.println("영속성 컨텍스트 : 위에서 쿼리 실행하여 이번엔 쿼리 실행 안함");
+    Optional<CachedMember> cachedMember2 = cachedMemberRepository.findById(1L);
+}
+
+console...
+영속성 컨텍스트 : 쿼리 실행
+Hibernate:
+    select
+        cachedmemb0_.id as id1_1_0_,
+        cachedmemb0_.name as name2_1_0_
+    from
+        cached_member cachedmemb0_
+    where
+        cachedmemb0_.id=?
+영속성 컨텍스트 : 위에서 쿼리 실행하여 이번엔 쿼리 실행 안함
+
+
+@Test
+void entityCachedTest() {
+System.out.println("영속성 컨텍스트 테스트에서 실행 이후 어플리케이션 캐시로 저장되어 쿼리 실행 안함1");
+Optional<CachedMember> cachedMember1 = cachedMemberRepository.findById(1L);
+
+    System.out.println("영속성 컨텍스트 테스트에서 실행 이후 어플리케이션 캐시로 저장되어 쿼리 실행 안함2");
+    Optional<CachedMember> cachedMember2 = cachedMemberRepository.findById(1L);
+}
+
+console...
+영속성 컨텍스트 테스트에서 실행 이후 어플리케이션 캐시로 저장되어 쿼리 실행 안함1
+영속성 컨텍스트 테스트에서 실행 이후 어플리케이션 캐시로 저장되어 쿼리 실행 안함2
+```

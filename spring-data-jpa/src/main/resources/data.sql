@@ -11,3 +11,6 @@ insert into article (id, member_id, title) values (7, 2, 'GGG');
 insert into article (id, member_id, title) values (8, 2, 'HHH');
 insert into article (id, member_id, title) values (9, 2, 'III');
 insert into article (id, member_id, title) values (10, 2, 'JJJ');
+
+insert into cached_member (id, name) values (1, 'memA');
+insert into cached_member (id, name) values (2, 'memB');
