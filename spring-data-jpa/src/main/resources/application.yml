@@ -1,7 +1,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create-drop #운영중일 때는 validate 를 많이 사용함
     properties:
       hibernate:
         show_sql: true
