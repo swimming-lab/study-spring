@@ -1,31 +1,57 @@
 package swm.spring.jpa.study;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import swm.spring.jpa.study.entity.Comment;
 import swm.spring.jpa.study.entity.Post;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 
 @SpringBootTest
-@Transactional
+@DataJpaTest
 public class PostTest {
 
     @PersistenceContext
     EntityManager entityManager;
 
-    @Test
-    void hibernate_cascade() {
-        Post post = new Post();
+    Post post;
+    Comment comment;
+
+    @BeforeEach
+    void setup() {
+        post = new Post();
         post.setTitle("게시글 작성한다.");
 
-        Comment comment1 = new Comment();
-        comment1.setComment("안녕?");
+        comment = new Comment();
+        comment.setComment("안녕?");
 
         Comment comment2 = new Comment();
         comment2.setComment("안녕?");
+
+        post.addComment(comment);
+        post.addComment(comment2);
+
+        entityManager.persist(post);    // 이렇게 Post만 저장할 시 cascade 옵션이 없으면 Comment는 저장되지 않는다.
+        entityManager.flush();
+        entityManager.clear();
+    }
+
+
+    @Test
+    @Rollback(false)
+    void hibernate_cascade() {
+        Post post = new Post();
+        post.setTitle("게시글 작성한다.11");
+
+        Comment comment1 = new Comment();
+        comment1.setComment("안녕?11");
+
+        Comment comment2 = new Comment();
+        comment2.setComment("안녕?11122");
 
         post.addComment(comment1);
         post.addComment(comment2);
@@ -58,5 +84,21 @@ public class PostTest {
          *     values
          *         (?, ?, ?)
          */
+    }
+
+    @Test
+    @Rollback(false)
+    void fetchTest() {
+        Post post1 = entityManager.find(Post.class, post.getId());
+        post1.getComments().stream().forEach(c -> {
+            System.out.println(c.getComment());
+        });
+
+        //System.out.println(post1.getComments());
+        //entityManager.flush();
+        //entityManager.clear();
+
+        Comment comment1 = entityManager.find(Comment.class, comment.getId());
+        System.out.println(comment1.getComment());
     }
 }
