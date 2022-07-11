@@ -231,3 +231,10 @@ console...
 영속성 컨텍스트 테스트에서 실행 이후 어플리케이션 캐시로 저장되어 쿼리 실행 안함1
 영속성 컨텍스트 테스트에서 실행 이후 어플리케이션 캐시로 저장되어 쿼리 실행 안함2
 ```
+
+## Entity 상태
+
+- Transient: JPA가 모르는 상태
+- Persistent: JPA가 관리중인 상태 (1차 캐시, Dirty Checking, Write Behind, ...)
+- Detached: JPA가 더이상 관리하지 않는 상태.
+- Removed: JPA가 관리하긴 하지만 삭제하기로 한 상태.
