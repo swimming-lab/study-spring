@@ -1,4 +1,4 @@
-package swm.spring.querydsl.account;
+package swm.spring.datacommon.account;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;

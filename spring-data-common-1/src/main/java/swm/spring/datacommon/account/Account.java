@@ -1,4 +1,4 @@
-package swm.spring.querydsl.account;
+package swm.spring.datacommon.account;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
