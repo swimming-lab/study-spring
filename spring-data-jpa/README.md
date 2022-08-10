@@ -92,6 +92,10 @@ findById와 같은 entityManager.find() 요청은 jpa가 내부적으로 join문
 단, 실무에서는 jpql문을 짜기도 하고,
 findBy~ 의 쿼리 메소드도 사용하기 때문에 jpql이 만들어져 N+1이 발생하게 된다.
 
+OneToMany 관계에서 N+1 문젝 발생한다.  
+Many에 해당하는 모든 데이터를 각 개인 쿼리를 조회학 때문이다.  
+해결하기 위하 방법은 방향을 반대로 한다.(ManyToOne)  
+  
 **해결 방법**
 
 - 지연 로딩
